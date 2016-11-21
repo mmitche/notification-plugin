@@ -14,9 +14,7 @@
 
 package com.tikal.hudson.plugins.notification;
 
-import hudson.util.FormValidation;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
 
 public class Endpoint {
 
@@ -78,7 +76,7 @@ public class Endpoint {
     public void setEvent ( String event ){
         this.event = event;
     }
-
+    
     public Format getFormat() {
         if (this.format==null){
             this.format = Format.JSON;
@@ -96,13 +94,6 @@ public class Endpoint {
 
     public void setLoglines(Integer loglines) {
         this.loglines = loglines;
-    }
-
-    public FormValidation doCheckURL(@QueryParameter(value = "url", fixEmpty = true) String url) {
-        if (url.equals("111"))
-            return FormValidation.ok();
-        else
-            return FormValidation.error("There's a problem here");
     }
 
     public boolean isJson() {

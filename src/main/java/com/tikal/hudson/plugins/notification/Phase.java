@@ -36,19 +36,21 @@ public enum Phase {
         
         for ( Endpoint target : property.getEndpoints()) {
             if ( isRun( target )) {
-                listener.getLogger().println( String.format( "Notifying endpoint '%s'", target ));
+                listener.getLogger().println( String.format( "Notifying endpoint with id '%s'", target ));
 
                 try {
                     JobState jobState = buildJobState(run.getParent(), run, listener, target);
                     EnvVars environment = run.getEnvironment(listener);
-                    String expandedUrl = environment.expand(target.getUrl());
+                    // Expand out the URL from environment + url
+                    String actualUrl = Utils.getUrl(target.getUrl());
+                    String expandedUrl = environment.expand(actualUrl);
                     target.getProtocol().send(expandedUrl,
                                               target.getFormat().serialize(jobState),
                                               target.getTimeout(),
                                               target.isJson());
                 } catch (Throwable error) {
-                    error.printStackTrace( listener.error( String.format( "Failed to notify endpoint '%s'", target )));
-                    listener.getLogger().println( String.format( "Failed to notify endpoint '%s' - %s: %s",
+                    error.printStackTrace( listener.error( String.format( "Failed to notify endpoint with id '%s'", target )));
+                    listener.getLogger().println( String.format( "Failed to notify endpoint with id '%s' - %s: %s",
                                                                  target, error.getClass().getName(), error.getMessage()));
                 }
             }
@@ -128,8 +130,8 @@ public enum Phase {
         StringBuilder log = new StringBuilder("");
         Integer loglines = target.getLoglines();
 
-        if (null == loglines) {
-                return log;
+        if (loglines == null || loglines == 0) {
+            return log;
         }
 
         try {
